@@ -1,3 +1,16 @@
-<title>Etusivu</title>
-<h1>Etusivu</h1>
-<b>Tervetuloa</b> <i>sovellukseen</i>!
+<title>Tietovisa</title>
+<h1>Tietovisa</h1>
+<b>Tervetuloa</b> <i> tietovisa-</i>sovellukseen!
+
+<h2>Kirjaudu sisään</h2>
+
+<form action="/quiz" method="POST">
+Tunnus: <br><input type="text" name="name">
+<p>
+Salasana: <br><input type="text" name="password">
+<p>
+<input type="submit" value="Kirjaudu">
+</form>
+Jos sinulla ei ole tunnusta, voit luoda sen <a href="/newuser">täältä</a>
+<p>
+<a href="/end">Lopeta</a>

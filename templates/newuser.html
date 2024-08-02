@@ -1,0 +1,20 @@
+<h2>Uuden tunnuksen luominen</h2>
+
+<form action="/create_user" method="post">
+Anna tunnus: <br><input type="text" name="name" minlength="1" maxlength="20">
+<p>
+Anna salasana: <br><input type="text" name="password">
+<p>
+Anna salasana uudestaan: <br><input type="text" name="password2">
+<p>
+Valitse rooli:
+<select name="role">
+<option value=1> tietovisaan osallistuja
+<option value=2> tietovisan luoja
+</select>
+<p>
+<input type="submit" value="Luo tunnus">
+</form>
+
+<p>
+<a href="/">Takaisin</a>
