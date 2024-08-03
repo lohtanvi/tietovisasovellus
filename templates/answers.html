@@ -1,0 +1,7 @@
+
+<p>Anna kysymyksiin oikeat vastaukset:<br>
+<hr>
+{% for question in questions %}
+{{ question.id, question.question }}
+<hr>
+{% endfor %}

@@ -11,3 +11,10 @@ CREATE TABLE quizzes (
     name TEXT,
     visible INTEGER
 );
+
+CREATE TABLE questions (
+    id SERIAL PRIMARY KEY,
+    quiz_id INTEGER REFERENCES quizzes,
+    question TEXT,
+    qvisible INTEGER
+);

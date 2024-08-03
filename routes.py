@@ -37,11 +37,32 @@ def quiz():
     quizzes = result.fetchall()
     return render_template("quiz.html", name=request.form["username"], quizzes=quizzes)
 
+@app.route("/userstat")
+def userstat():
+    return render_template("userstat.html")
 
+@app.route("/new_quiz")
+def new_quiz():
+    return render_template("create_quiz.html")
 
-#@app.route("/new_quiz", methods=["POST"])
-#    def new_quiz():
-#    name = requst.form("new_quiz")
-#    creator_id = 2
-#    visible = 1
+@app.route("/create_quiz", methods=["POST"])
+def create_quiz():
+    name = request.form["new_quiz"]
+#    creator_id = to be implemented 
+    sql = text("INSERT INTO quizzes (creator_id, name, visible) VALUES (:creator_id, :name, :visible) RETURNING id")
+    result = db.session.execute(sql, {"creator_id":2,"name":name,"visible":1})
+    quiz_id = result.fetchone()[0]
+    questions = request.form.getlist("question")
+    for question in questions:
+        if question != "":
+            sql = text("INSERT INTO questions (quiz_id, question, qvisible) VALUES (:quiz_id, :question, :qvisible)")
+            db.session.execute(sql, {"quiz_id":quiz_id,"question":question,"qvisible":1})
+    db.session.commit()
+    return redirect("/answers")
 
+@app.route("/answers")
+def answers():
+    result = db.session.execute(text("SELECT id, question FROM questions WHERE quiz_id=7")) 
+# quiz_id to be implemented
+    questions = result.fetchall()
+    return render_template("answers.html", questions=questions)
