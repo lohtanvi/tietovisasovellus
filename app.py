@@ -27,13 +27,25 @@ def newuser():
 def create_user():
     name = request.form["name"]
     password = request.form["password"]
-#        password2 = request.form["password2"]
-#       hash_value = generate_password_hash(password)
-    sql = text("INSERT INTO users (name, password) VALUES (:name, :password)")
-    db.session.execute(sql, {"name":name,"password":password})
+    role =  request.form["role"]
+#  TO DO password checks and security - password2 = request.form["password2"]
+ #       hash_value = generate_password_hash(password)
+    sql = text("INSERT INTO users (name, password, role) VALUES (:name, :password, :role)")
+    db.session.execute(sql, {"name":name,"password":password,"role":role})
     db.session.commit()
     return redirect("/")
 
 @app.route("/quiz", methods=["POST"])
 def quiz():
-    return render_template("quiz.html", name=request.form["name"])
+    result = db.session.execute(text("SELECT id, name FROM quizzes"))
+    quizzes = result.fetchall()
+    return render_template("quiz.html", name=request.form["name"], quizzes=quizzes)
+
+
+
+#@app.route("/new_quiz", methods=["POST"])
+#    def new_quiz():
+#    name = requst.form("new_quiz")
+#    creator_id = 2
+#    visible = 1
+     

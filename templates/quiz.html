@@ -2,7 +2,11 @@
 
 <h3>Mihin tietovisaan haluat osallistua:<h3>
 <p>
-
+<hr>
+{% for quiz in quizzes %}
+{{ quiz.id, quiz.name }}
+<hr>
+{% endfor %}
 
 
 
