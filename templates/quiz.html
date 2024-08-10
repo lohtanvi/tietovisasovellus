@@ -1,23 +1,32 @@
-<h2>Hei {{ name }}!<h2>
+<title>Tietovisa</title>
+<h1>Tietovisa</h1>
 
-<h3>Mihin tietovisaan haluat osallistua:<h3>
-<p>
-<hr>
-{% for quiz in quizzes %}
-{{ quiz.id, quiz.name }}
-<hr>
-{% endfor %}
-
-
-
-
-
-
-
-<h3>Voit katsoa, mihin tietovisaan olet jo osallistunut ja tietovisasta saamasi pisteet <a href="/userstat">täältä</a>.<h3>
-<p>
-<a href="/new_quiz">Luo uusi tietovisa</a>
-
+<p>Olet kirjautunut tunnuksella {{ session.user_name }}</p>
 
 <p>
+<a href="/userstat">Katso pisteesi</a>
+<p></p>
 <a href="/end">Lopeta</a>
+
+<h2>Mihin tietovisaan haluat osallistua:<h2>
+
+<ul>
+{% for quiz in quizzes %}
+<li><a href="/questions/{{ quiz.id }}">{{ quiz.name }}</a>
+{% endfor %}
+</li>
+
+
+{% if session.user_role == 2 %}
+
+<p>Olet kirjautunut roolilla: tietovisan luoja</p>
+<p>
+<ul>
+<li> <a href="/new_quiz">Luo uusi tietovisa</a>
+<li> <a href="/del_quiz">Poista tietovisa</a>
+<li> <a href="/creator_stat">Katso osallistuja</a>
+</ul>
+
+{% endif %}
+
+
