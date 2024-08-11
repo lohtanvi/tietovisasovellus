@@ -1,0 +1,8 @@
+<p>Anna kysymyksiin oikeat vastaukset klikkaamalla kysymystä:<br>
+    <hr>
+<ul>
+    {% for question in questions %}
+    <li><a href="/answers/{{ question.id }}">{{ question.question }}</a>
+    {% endfor %}
+    </li>
+</ul>

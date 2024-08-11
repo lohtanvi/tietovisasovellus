@@ -18,3 +18,10 @@ CREATE TABLE questions (
     question TEXT,
     qvisible INTEGER
 );
+
+CREATE TABLE qanswers (
+    id SERIAL PRIMARY KEY,
+    quest_id INTEGER REFERENCES questions,
+    answer TEXT,
+    correct INTEGER
+);
