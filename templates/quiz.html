@@ -11,7 +11,7 @@
 
     <ul>
     {% for quiz in quizzes %}
-    <li><a href="/questions/{{ quiz.id }}">{{ quiz.name }}</a>
+    <li><a href="/attend/{{ quiz.id }}">{{ quiz.name }}</a>
     {% endfor %}
     </li>
 
@@ -24,11 +24,11 @@
 
 {% if session.user_role == 2 %}
 
-<h2>Mihin tietovisaan haluat tehdä muutoksia:<h2>
+<h2>Olet luonut seuraavat tietovisat:<h2>
 
     <ul>
     {% for quiz in quizzes %}
-    <li><a href="/questions/{{ quiz.id }}">{{ quiz.name }}</a>
+    <li><a href="/del_quiz/{{ quiz.id }}">{{ quiz.name }}</a>
     {% endfor %}
     </li>
 

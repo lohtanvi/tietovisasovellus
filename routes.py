@@ -6,7 +6,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
 
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -40,27 +39,33 @@ def create_user():
     return redirect("/")
 
 
-@app.route("/quiz", methods=["POST"])
+@app.route("/quiz", methods=["GET","POST"])
 def quiz():
-    name = request.form["username"]
-    password = request.form["password"]
-    sql = text("SELECT id, password, role FROM users WHERE name=:name")
-    result = db.session.execute(sql, {"name":name})
-    user = result.fetchone()
-    if not check_password_hash(user[1], password):
-        return render_template("error.html", message = 'Tunnus tai salasana virheellinen')
-    session["user_id"] = user[0]
-    session["user_name"] = name
-    session["user_role"] = user[2]
-    if user[2] == 2:
-        creator_id = user[0]
+    if request.method == "GET":
+        creator_id = session["user_id"] 
         sql = text("SELECT id, name FROM quizzes WHERE visible=1 AND creator_id=:creator_id")
         result = db.session.execute(sql, {"creator_id":creator_id})
         quizzes = result.fetchall()
-    else:
-        sql = text("SELECT id, name FROM quizzes WHERE visible=1")
-        result = db.session.execute(sql)
-        quizzes = result.fetchall()
+    if request.method == "POST":
+        name = request.form["username"]
+        password = request.form["password"]
+        sql = text("SELECT id, password, role FROM users WHERE name=:name")
+        result = db.session.execute(sql, {"name":name})
+        user = result.fetchone()
+        if not check_password_hash(user[1], password):
+            return render_template("error.html", message = 'Tunnus tai salasana virheellinen')
+        session["user_id"] = user[0]
+        session["user_name"] = name
+        session["user_role"] = user[2]
+        if user[2] == 2:
+            creator_id = user[0]
+            sql = text("SELECT id, name FROM quizzes WHERE visible=1 AND creator_id=:creator_id")
+            result = db.session.execute(sql, {"creator_id":creator_id})
+            quizzes = result.fetchall()
+        else:
+            sql = text("SELECT id, name FROM quizzes WHERE visible=1")
+            result = db.session.execute(sql)
+            quizzes = result.fetchall()
     return render_template("quiz.html", quizzes=quizzes)
 
 @app.route("/userstat")
@@ -85,10 +90,15 @@ def create_quiz():
                 sql = text("INSERT INTO questions (quiz_id, question, qvisible) VALUES (:quiz_id, :question, :qvisible)")
                 db.session.execute(sql, {"quiz_id":quiz_id,"question":question,"qvisible":1})
         db.session.commit()
-    return redirect("/quiz")
+    return redirect("/questions/" + str(quiz_id))
 
 @app.route("/answers/<int:id>")
 def answers(id):
+    quest_id = id
+    sql = text("SELECT * FROM qanswers WHERE quest_id=:quest_id")
+    result = db.session.execute(sql, {"quest_id":quest_id}).fetchone()
+    if result:
+        return render_template("error.html", message = 'Kysymykselle on jo vastaus')
     return render_template("answers.html", id=id)
           
 @app.route("/questions/<int:quiz_id>")
@@ -102,6 +112,9 @@ def questions(quiz_id):
 def create_answer():
     answer = request.form["correct"]
     quest_id = request.form["id"]
+    id = quest_id
+    sql = text("SELECT quiz_id FROM questions WHERE id=:id")
+    quiz_id = db.session.execute(sql, {"id":id}).fetchone()[0]
     if answer != "":
         sql = text("INSERT INTO qanswers (answer, quest_id, correct) VALUES (:answer, :quest_id, :correct)")
         db.session.execute(sql, {"answer":answer,"quest_id":quest_id,"correct":1})
@@ -112,4 +125,12 @@ def create_answer():
                 sql = text("INSERT INTO qanswers (answer, quest_id, correct) VALUES (:answer, :quest_id, :correct)")
                 db.session.execute(sql, {"answer":answer,"quest_id":quest_id,"correct":0})
         db.session.commit()            
-    return redirect ("/questions/" + str(quest_id))  #TO BE CORRECTED
+    return redirect ("/questions/" + str(quiz_id))
+
+@app.route("/del_quiz/<int:quiz_id>")
+def del_quiz(quiz_id):
+    id = quiz_id
+    sql = text("UPDATE quizzes SET visible = 0 WHERE id=:id")
+    db.session.execute(sql, {"id":id})
+    db.session.commit() 
+    return redirect ("/quiz")
