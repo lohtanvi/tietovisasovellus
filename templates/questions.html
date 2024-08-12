@@ -1,3 +1,21 @@
+{% if session.user_role == 1 %}
+
+<p>Vastaa klikkaamalla kysymystä:<br> <hr>
+<ul>
+    {% for question in questions %}
+    <li><a href="/attend/{{ question.id }}">{{ question.question }}</a>
+    {% endfor %}
+    </li>
+</ul>
+
+<p>
+    <a href="/quiz">Valmis</a>
+
+{% endif %}
+
+
+{% if session.user_role == 2 %}
+
 <p>Anna kysymyksiin oikeat vastaukset klikkaamalla kysymystä:<br>
     <hr>
 <ul>
@@ -9,3 +27,5 @@
 
 <p>
     <a href="/quiz">Valmis</a>
+
+{% endif %}

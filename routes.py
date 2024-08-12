@@ -5,23 +5,27 @@ from flask import redirect, render_template, session, request, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
 
-
+# welcome page
 @app.route("/")
 def index():
     return render_template("index.html")
 
+# leaving the quizzes
 @app.route("/end")
 def end():
     return render_template("end.html")
 
+#template for login details
 @app.route("/login")
 def login():
     return render_template("login.html")
 
+#template for user creation details
 @app.route("/newuser")
 def newuser():
     return render_template("newuser.html")
 
+#user and password creation
 @app.route("/create_user", methods=["POST"])
 def create_user():
     name = request.form["username"]
@@ -38,7 +42,7 @@ def create_user():
     db.session.commit()
     return redirect("/")
 
-
+# quizzes are listed depending of the role
 @app.route("/quiz", methods=["GET","POST"])
 def quiz():
     if request.method == "GET":
@@ -46,6 +50,10 @@ def quiz():
         sql = text("SELECT id, name FROM quizzes WHERE visible=1 AND creator_id=:creator_id")
         result = db.session.execute(sql, {"creator_id":creator_id})
         quizzes = result.fetchall()
+        if session["user_role"] == 1:
+            sql = text("SELECT id, name FROM quizzes WHERE visible=1")
+            result = db.session.execute(sql)
+            quizzes = result.fetchall()
     if request.method == "POST":
         name = request.form["username"]
         password = request.form["password"]
@@ -68,14 +76,17 @@ def quiz():
             quizzes = result.fetchall()
     return render_template("quiz.html", quizzes=quizzes)
 
+# to be done
 @app.route("/userstat")
 def userstat():
     return render_template("userstat.html")
 
+# template for quiz creation details
 @app.route("/new_quiz")
 def new_quiz():
     return render_template("create_quiz.html")
 
+# new quiz and quiz questions will be created unless name of the quiz is empty or questions are empty
 @app.route("/create_quiz", methods=["POST"])
 def create_quiz():
     name = request.form["new_quiz"]
@@ -92,6 +103,7 @@ def create_quiz():
         db.session.commit()
     return redirect("/questions/" + str(quiz_id))
 
+# will be checked if question has already at least one answer
 @app.route("/answers/<int:id>")
 def answers(id):
     quest_id = id
@@ -100,7 +112,8 @@ def answers(id):
     if result:
         return render_template("error.html", message = 'Kysymykselle on jo vastaus')
     return render_template("answers.html", id=id)
-          
+
+#questions are listed for giving answers       
 @app.route("/questions/<int:quiz_id>")
 def questions(quiz_id):
     sql = text("SELECT id, question FROM questions WHERE quiz_id=:quiz_id")
@@ -108,6 +121,7 @@ def questions(quiz_id):
     questions = result.fetchall()
     return render_template("questions.html", questions=questions)
 
+# all answers to question will be updated unless the correct answer is empty
 @app.route("/create_answer", methods=["POST"])
 def create_answer():
     answer = request.form["correct"]
@@ -127,6 +141,7 @@ def create_answer():
         db.session.commit()            
     return redirect ("/questions/" + str(quiz_id))
 
+# quiz will be deleted directly by clicking the link
 @app.route("/del_quiz/<int:quiz_id>")
 def del_quiz(quiz_id):
     id = quiz_id
@@ -134,3 +149,10 @@ def del_quiz(quiz_id):
     db.session.execute(sql, {"id":id})
     db.session.commit() 
     return redirect ("/quiz")
+
+@app.route("/attend/<int:id>")
+def attend(id):
+    quest_id = id
+    sql = text("SELECT * FROM qanswers WHERE quest_id=:quest_id")
+    choices = db.session.execute(sql, {"quest_id":quest_id}).fetchall()
+    return render_template("attend.html", choices=choices)
