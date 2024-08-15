@@ -25,3 +25,11 @@ CREATE TABLE qanswers (
     answer TEXT,
     correct INTEGER
 );
+
+CREATE TABLE apoints (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users,
+    quiz_id INTEGER REFERENCES quizzes,
+    quest_id INTEGER REFERENCES questions,
+    points INTEGER
+);

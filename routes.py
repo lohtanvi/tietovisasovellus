@@ -1,7 +1,7 @@
 import os
 from db import db
 from app import app
-from flask import redirect, render_template, session, request, abort
+from flask import redirect, render_template, session, request
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
 
@@ -13,6 +13,9 @@ def index():
 # leaving the quizzes
 @app.route("/end")
 def end():
+    del session["user_id"]
+    del session["user_name"]
+    del session["user_role"]
     return render_template("end.html")
 
 #template for login details
@@ -119,7 +122,7 @@ def questions(quiz_id):
     sql = text("SELECT id, question FROM questions WHERE quiz_id=:quiz_id")
     result = db.session.execute(sql, {"quiz_id":quiz_id})
     questions = result.fetchall()
-    return render_template("questions.html", questions=questions)
+    return render_template("questions.html", questions=questions, quiz_id=quiz_id)
 
 # all answers to question will be updated unless the correct answer is empty
 @app.route("/create_answer", methods=["POST"])
@@ -153,6 +156,32 @@ def del_quiz(quiz_id):
 @app.route("/attend/<int:id>")
 def attend(id):
     quest_id = id
-    sql = text("SELECT * FROM qanswers WHERE quest_id=:quest_id")
+    sql = text("SELECT * FROM qanswers WHERE quest_id=:quest_id ORDER BY answer ASC")
     choices = db.session.execute(sql, {"quest_id":quest_id}).fetchall()
-    return render_template("attend.html", choices=choices)
+    sql = text("SELECT quiz_id FROM questions WHERE id=:id")
+    quiz_id = db.session.execute(sql, {"id":id}).fetchone()[0]
+    if len(choices) == 0:
+        return render_template("error.html", message = 'Kysymyksellä ei ole vastausta!')
+    return render_template("attend.html", choices=choices, quest_id=quest_id, count=len(choices), quiz_id=quiz_id)
+
+#show whether the answer is correct and update attendee points only once
+@app.route("/result", methods=["POST"])
+def result():
+    answer = request.form["answer"].strip()
+    quest_id = request.form["quest_id"]
+    sql = text("SELECT answer FROM qanswers WHERE quest_id=:quest_id AND correct=1")
+    correct = db.session.execute(sql, {"quest_id":quest_id}).fetchone()[0]
+    id = quest_id
+    sql = text("SELECT quiz_id FROM questions WHERE id=:id")
+    quiz_id = db.session.execute(sql, {"id":id}).fetchone()[0]
+    if answer == correct:
+        user_id = session["user_id"]
+        sql = text("SELECT * FROM apoints WHERE user_id=:user_id AND quiz_id=:quiz_id AND quest_id=:quest_id")
+        point = db.session.execute(sql, {"user_id":user_id, "quiz_id":quiz_id, "quest_id":quest_id}).fetchone()
+        if point:
+            return render_template("error.html", message = 'Kysymyksen vastaukselle on jo annettu piste.')
+        else:
+            sql = text("INSERT INTO apoints (user_id, quiz_id, quest_id, points) VALUES (:user_id, :quiz_id, :quest_id, :points)")
+            db.session.execute(sql,{"user_id":user_id, "quiz_id":quiz_id, "quest_id":quest_id,"points":1})
+            db.session.commit() 
+    return render_template("result.html", correct=correct, answer=answer, quest_id=quest_id, quiz_id=quiz_id)

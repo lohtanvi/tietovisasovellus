@@ -1,0 +1,13 @@
+
+<h2>Tulos</h2>
+
+Vastaus: <b>{{ answer }}</b> 
+<p>
+{% if correct == answer %}
+On oikein!
+{% else %}
+Harmi! Vastaus ei ollut oikein</b>.
+{% endif %}
+
+<p>
+<a href="/questions/{{ quiz_id }}">Palaa takaisin</a>

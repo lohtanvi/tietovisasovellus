@@ -1,22 +1,23 @@
 
 <hr>
-<form action="/result" method="POST"></form>
-
+<form action="/result" method="POST">
+<p>Vastausvaihtoehdot ovat: <br>
+{% if count !=1 %}
 <ul>
 {% for choice in choices %}
 <li> {{ choice.answer }} 
-<input type="hidden" name="id" value="{{ choice.id }}">
-<input type="hidden" name="correct" value="{{ choice.correct }}">
 {% endfor %}
 </ul>
 <hr>
+{% endif %}
 
 <p>Vastaus: <br>
 <input type="text" name="answer"></p>
 
+<input type="hidden" name="quest_id" value="{{ quest_id }}"></p>
 <input type="submit" value="Tarkista vastaus">
 </form>
     
 
 
-<a href="/quiz">Takaisin</a>
+<a href="/questions/{{ quiz_id }}">Takaisin</a>
