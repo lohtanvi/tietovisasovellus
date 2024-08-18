@@ -1,5 +1,7 @@
+{% extends "layout.html" %}
 
-<hr>
+{% block content %}
+<h2>Vastaus</h2>
 <form action="/result" method="POST">
 <p>Vastausvaihtoehdot ovat: <br>
 {% if count !=1 %}
@@ -17,7 +19,6 @@
 <input type="hidden" name="quest_id" value="{{ quest_id }}"></p>
 <input type="submit" value="Tarkista vastaus">
 </form>
-    
-
-
+<p>
 <a href="/questions/{{ quiz_id }}">Takaisin</a>
+{% endblock %}

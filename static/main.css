@@ -1,0 +1,11 @@
+body {
+  margin: auto;
+  max-width: 45em;
+  background-color: lightgray;
+}
+
+h2 {
+  background-color: orange;
+  text-align: center;
+  color: azure;
+}

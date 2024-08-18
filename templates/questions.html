@@ -1,5 +1,9 @@
-{% if session.user_role == 1 %}
+{% extends "layout.html" %}
 
+{% block content %}
+
+{% if session.user_role == 1 %}
+<h2>Kysymykset</h2>
 <p>Vastaa klikkaamalla kysymystä:<br> <hr>
 <ul>
     {% for question in questions %}
@@ -8,14 +12,15 @@
     </li>
 </ul>
 
+
 <p>
     <a href="/quiz">Valmis</a>
 
 {% endif %}
 
-
 {% if session.user_role == 2 %}
 
+<h2>Kysymyksien vastausten määrittäminen</h2>
 <p>Anna kysymyksiin oikeat vastaukset klikkaamalla kysymystä:<br>
     <hr>
 <ul>
@@ -29,3 +34,4 @@
     <a href="/quiz">Valmis</a>
 
 {% endif %}
+{% endblock %}

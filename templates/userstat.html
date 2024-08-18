@@ -1,8 +1,21 @@
-<h3>Olet osallistunut seuraaviin tietovisoihin:<h3>
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Tilastotiedot</h2>
+{% if session.user_role == 1 %}
+
+Olet osallistunut yhteensä {{count1}} tietovisaan.
 <p>
 
-
-<h3>Olet saanut pisteitä seuraavasti:<h3>
+Olet saanut yhteensä {{count2}} pistettä.
 <p>
 
+{% endif %}
+
+{% if session.user_role == 2 %}
+
+Olet luonut yhteensä {{count3}} tietovisaa, joista olet poistanut yhteensä {{count4}}.
+
+{% endif %}
 <a href="/quiz">Takaisin</a>
+{% endblock %}

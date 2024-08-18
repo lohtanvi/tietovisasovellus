@@ -1,25 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Kysymysten luominen</h2>
 <form action="/create_quiz" method="POST">
 Anna uuden tietovisan nimi:<br>
-<input type="text" name="new_quiz"></p>
+<input type="text" name="new_quiz" minlength="1" maxlength="50"></p>
+Anna tietovisalle vähintään 1 kysymys:
 <p>Kysymys 1:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 2:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 3:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 4:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 5:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 6:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 7:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 8:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 9:<br>
-<input type="text" name="question"></p>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
 <p>Kysymys 10:<br>
-<input type="text" name="question"></p>
-<input type="submit" value="Palaa muokkamaan tietovisan kysymymyksiä">
+<input type="text" name="question" minlength="1" maxlength="100"></p>
+<input type="submit" value="Siirry antamaan kysymymyksiin vastaukset">
 </form>
+{% endblock %}

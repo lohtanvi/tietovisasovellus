@@ -1,6 +1,6 @@
-<title>Tietovisa</title>
-<h1>Tietovisa</h1>
-<b>Tervetuloa</b> <i> tietovisa-</i>sovellukseen!
+{% extends "layout.html" %}
+
+{% block content %}
 
 <h2>Kirjaudu sisään</h2>
 
@@ -11,3 +11,4 @@ Salasana: <br><input type="password" name="password">
 <p>
 <input type="submit" value="Kirjaudu">
 </form>
+{% endblock %}

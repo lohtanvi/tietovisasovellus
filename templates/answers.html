@@ -1,7 +1,10 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Vastausten luominen</h2>
 <form action="/create_answer" method="POST">
 Anna kysymykseen oikea vastaus:<br>
 <input type="text" name="correct"></p>
-
 <p>Mikäli haluat, että kysymys on vaihtoehtokysymys eli annetuista vaihtoehdoista valitaan yksi, niin anna muut vastausvaihtoehdot.</p>
 <p>Vastausvaihtoehto: <br>
 <input type="text" name="wrong"></p>
@@ -10,3 +13,4 @@ Anna kysymykseen oikea vastaus:<br>
 <input type="hidden" name="id" value="{{ id }}">
 <input type="submit" value="Palaa kysymyksiin">
 </form>
+{% endblock %}

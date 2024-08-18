@@ -1,3 +1,5 @@
-Virhe: {{ message }}
-
-Siirry takaisin web-sivun nuolesta!
+{% extends "layout.html" %}
+{% block content %}
+<p>Virhe: {{ message }}</p>
+<p>Siirry takaisin web-sivun nuolesta!</p>
+{% endblock %}

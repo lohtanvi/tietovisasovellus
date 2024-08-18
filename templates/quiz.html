@@ -1,13 +1,19 @@
-<title>Tietovisa</title>
-<h1>Tietovisa</h1>
+{% extends "layout.html" %}
 
-<p>Olet kirjautunut tunnuksella {{ session.user_name }}</p>
+{% block content %}
 
 
 
 {% if session.user_role == 1 %}
+<h2>Tietovisaan osallistuja</h2>
+<p>Olet kirjautunut tunnuksella <strong>{{ session.user_name }}</strong></p>
+<p>
+<ul>
+<li> <a href="/userstat">Katso pisteesi</a>
+<li> <a href="/end">Lopeta</a>
+</ul>
 
-<h2>Mihin tietovisaan haluat osallistua:<h2>
+<p>Mihin tietovisaan haluat osallistua:</p>
 
     <ul>
     {% for quiz in quizzes %}
@@ -15,16 +21,25 @@
     {% endfor %}
     </li>
 
-    <p>
-        <a href="/userstat">Katso pisteesi</a>
-        <p></p>
-        <a href="/end">Lopeta</a>
 
 {% endif %}
 
-{% if session.user_role == 2 %}
 
-<h2>Olet luonut seuraavat tietovisat:<h2>
+
+
+
+{% if session.user_role == 2 %}
+<h2>Tietovisan luoja</h2>
+<p>Olet kirjautunut tunnuksella <strong>{{ session.user_name }} </strong> ja roolilla: <strong>tietovisan luoja</strong></p>
+<p>
+<ul>
+<li> <a href="/new_quiz">Luo uusi tietovisa</a>
+<li> <a href="/userstat">Katso tilastoja</a>
+<li> <a href="/end">Lopeta</a>
+</ul>
+
+<p>Seuraavat tietovisat ovat aktiivisia:<p>
+<p>Klikkaamalla nimeä voit poistaa tietovisan.</p>
 
     <ul>
     {% for quiz in quizzes %}
@@ -32,14 +47,16 @@
     {% endfor %}
     </li>
 
-<p>Olet kirjautunut roolilla: tietovisan luoja</p>
-<p>
-<ul>
-<li> <a href="/new_quiz">Luo uusi tietovisa</a>
-<li> <a href="/del_quiz">Poista tietovisa</a>
-<li> <a href="/creator_stat">Katso osallistuja</a>
-</ul>
+<p>Seuraavat tietovisat ovat ei-aktiivisia:<p>
+<p>Klikkaamalla nimeä voit aktivoida tietovisan uudelleen.</p>
+    
+    <ul>
+    {% for quiz in notquizzes %}
+    <li><a href="/activate_quiz/{{ quiz.id }}">{{ quiz.name }}</a>
+    {% endfor %}
+    </li>
+
 
 {% endif %}
 
-
+{% endblock %}
