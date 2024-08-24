@@ -1,10 +1,18 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<b>Tervetuloa</b> <i> tietovisa-</i>sovellukseen!
+{% if session.user_id %}
+<p>Olet kirjautunut tunnuksella <b>{{ session.user_name }}</b>.</p>
+{% else %}
+
+
+<p>Tervetuloa <strong> tietovisa-</strong>sovellukseen! </p>
+<p>
+<i> {{ message }}</i>
 <p>
 <a href="/login">Kirjaudu sisään</a>
 <p>
 <a href="/newuser">Luo tunnus</a>
 <p>
+{% endif %}
 {% endblock %}

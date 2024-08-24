@@ -1,7 +1,7 @@
 import os
 from db import db
 from app import app
-from flask import redirect, render_template, session, request
+from flask import redirect, render_template, session, request, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
 
@@ -13,6 +13,9 @@ def index():
 # leaving the quizzes
 @app.route("/end")
 def end():
+    user_stat = session.get("user_id", 0)
+    if not user_stat:
+        return render_template("index.html", message = 'Et ole kirjautunut.')  
     del session["user_id"]
     del session["user_name"]
     del session["user_role"]
@@ -35,26 +38,29 @@ def create_user():
     sql = text("SELECT * FROM users WHERE name=:name")
     result = db.session.execute(sql, {"name":name}).fetchone()
     if result:
-        return render_template("error.html", message = 'Käyttäjätunnus on varattu.Valitse toinen käyttäjätunnus.')
+        return render_template("newuser.html", message = 'Käyttäjätunnus on varattu. Valitse toinen käyttäjätunnus.')
     if len(name) < 1 or len(name) > 20:
-        return render_template("error.html", message='Tunnuksessa tulee olla 1-20 merkkiä')
+        return render_template("newuser.html", message = 'Tunnuksessa tulee olla 1-20 merkkiä')
     password = request.form["password1"]
     password2 = request.form["password2"]
     if password != password2:
-        return render_template("error.html", message = 'Salasanat eroavat')
+        return render_template("newuser.html", message = 'Salasanat eroavat')
     if password2 == '':
-        return render_template("error.html", message = 'Salasana on tyhjä')
+        return render_template("newuser.html", message = 'Salasana on tyhjä')
     role =  request.form["role"]
     hash_value = generate_password_hash(password)
     sql = text("INSERT INTO users (name, password, role) VALUES (:name, :password, :role)")
     db.session.execute(sql, {"name":name,"password":hash_value,"role":role})
     db.session.commit()
-    return redirect("/")
+    return render_template("/login.html", message = 'Uusi tunnus luotiin.')
 
 # quizzes are listed depending of the role
 @app.route("/quiz", methods=["GET","POST"])
 def quiz():
     if request.method == "GET":
+        user_stat = session.get("user_id", 0)
+        if not user_stat:
+            return render_template("index.html", message = 'Kirjaudu katsoaksesi tietovisoja.')  
         creator_id = session["user_id"] 
         sql = text("SELECT id, name FROM quizzes WHERE visible=1 AND creator_id=:creator_id")
         result = db.session.execute(sql, {"creator_id":creator_id})
@@ -70,15 +76,18 @@ def quiz():
         name = request.form["username"]
         password = request.form["password"]
         if name == '':
-            return render_template("error.html", message = 'Käyttäjätunnusta ei annetu.')
+            return render_template("login.html", message = 'Käyttäjätunnusta ei annettu.')
         sql = text("SELECT id, password, role FROM users WHERE name=:name")
         result = db.session.execute(sql, {"name":name})
         user = result.fetchone()
+        if not user:
+            return render_template("login.html", message = 'Käyttäjätunnus ei täsmää.')
         if not check_password_hash(user[1], password):
-            return render_template("error.html", message = 'Tunnus tai salasana virheellinen')
+            return render_template("login.html", message = 'Tunnus tai salasana virheellinen')
         session["user_id"] = user[0]
         session["user_name"] = name
         session["user_role"] = user[2]
+        session["csrf_token"] = os.urandom(16).hex()
         if user[2] == 2:
             creator_id = user[0]
             sql = text("SELECT id, name FROM quizzes WHERE visible=1 AND creator_id=:creator_id")
@@ -99,6 +108,9 @@ def quiz():
 #user_statistics
 @app.route("/userstat")
 def userstat():
+    user_stat = session.get("user_id", 0)
+    if not user_stat:
+        return render_template("index.html", message = 'Kirjaudu katsoaksesi tilastot.')  
     user_id = session["user_id"]
     sql = text("SELECT COUNT( DISTINCT(quiz_id)) FROM apoints WHERE user_id=:user_id")
     count1 = db.session.execute(sql, {"user_id":user_id}).fetchone()[0]
@@ -119,9 +131,11 @@ def new_quiz():
 # new quiz and quiz questions will be created unless name of the quiz is empty or questions are empty
 @app.route("/create_quiz", methods=["POST"])
 def create_quiz():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     name = request.form["new_quiz"]
     if name == "":
-        return render_template("error.html", message = 'Tietovisalla ei ole nimeä')
+        return render_template("create_quiz.html", message = 'Tietovisalla ei ole nimeä')
     creator_id = session["user_id"]
     if name != "":
         sql = text("INSERT INTO quizzes (creator_id, name, visible) VALUES (:creator_id, :name, :visible) RETURNING id")
@@ -142,7 +156,7 @@ def answers(id):
     sql = text("SELECT * FROM qanswers WHERE quest_id=:quest_id")
     result = db.session.execute(sql, {"quest_id":quest_id}).fetchone()
     if result:
-        return render_template("error.html", message = 'Kysymykselle on jo vastaus')
+        return render_template("answers.html", id = id, message = 'Kysymykselle on jo vastaus')
     return render_template("answers.html", id=id)
 
 #questions are listed for giving answers       
@@ -156,6 +170,8 @@ def questions(quiz_id):
 # all answers to question will be updated unless the correct answer is empty
 @app.route("/create_answer", methods=["POST"])
 def create_answer():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     answer = request.form["correct"]
     quest_id = request.form["id"]
     id = quest_id
@@ -199,12 +215,17 @@ def attend(id):
     sql = text("SELECT quiz_id FROM questions WHERE id=:id")
     quiz_id = db.session.execute(sql, {"id":id}).fetchone()[0]
     if len(choices) == 0:
-        return render_template("error.html", message = 'Kysymykselle ei ole luotu vastausta!')
+        sql = text("SELECT id, question FROM questions WHERE quiz_id=:quiz_id")
+        result = db.session.execute(sql, {"quiz_id":quiz_id})
+        questions = result.fetchall()
+        return render_template("questions.html", questions=questions, quiz_id=quiz_id, message = 'Kysymyksen tekijä ei ole luonut kysymykselle vastausta!')
     return render_template("attend.html", choices=choices, quest_id=quest_id, count=len(choices), quiz_id=quiz_id)
 
 #show whether the answer is correct and update attendee points only once
 @app.route("/result", methods=["POST"])
 def result():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     answer = request.form["answer"].strip()
     quest_id = request.form["quest_id"]
     sql = text("SELECT answer FROM qanswers WHERE quest_id=:quest_id AND correct=1")
@@ -217,7 +238,7 @@ def result():
         sql = text("SELECT * FROM apoints WHERE user_id=:user_id AND quiz_id=:quiz_id AND quest_id=:quest_id")
         point = db.session.execute(sql, {"user_id":user_id, "quiz_id":quiz_id, "quest_id":quest_id}).fetchone()
         if point:
-            return render_template("error.html", message = 'Kysymyksen vastaukselle on jo annettu piste. Et voi saada emepää pisteitä')
+            return render_template ("result.html", correct=correct, answer=answer, quest_id=quest_id, quiz_id=quiz_id, message = 'Kysymyksen vastaukselle on jo annettu piste. Et voi saada enempää pisteitä')
         else:
             sql = text("INSERT INTO apoints (user_id, quiz_id, quest_id, points) VALUES (:user_id, :quiz_id, :quest_id, :points)")
             db.session.execute(sql,{"user_id":user_id, "quiz_id":quiz_id, "quest_id":quest_id,"points":1})

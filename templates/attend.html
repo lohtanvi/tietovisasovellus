@@ -15,7 +15,7 @@
 
 <p>Vastaus: <br>
 <input type="text" name="answer"></p>
-
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 <input type="hidden" name="quest_id" value="{{ quest_id }}"></p>
 <input type="submit" value="Tarkista vastaus">
 </form>

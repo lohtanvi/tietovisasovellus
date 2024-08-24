@@ -6,12 +6,8 @@
 
 {% if session.user_role == 1 %}
 <h2>Tietovisaan osallistuja</h2>
-<p>Olet kirjautunut tunnuksella <strong>{{ session.user_name }}</strong></p>
+
 <p>
-<ul>
-<li> <a href="/userstat">Katso pisteesi</a>
-<li> <a href="/end">Lopeta</a>
-</ul>
 
 <p>Mihin tietovisaan haluat osallistua:</p>
 
@@ -30,16 +26,13 @@
 
 {% if session.user_role == 2 %}
 <h2>Tietovisan luoja</h2>
-<p>Olet kirjautunut tunnuksella <strong>{{ session.user_name }} </strong> ja roolilla: <strong>tietovisan luoja</strong></p>
 <p>
 <ul>
-<li> <a href="/new_quiz">Luo uusi tietovisa</a>
-<li> <a href="/userstat">Katso tilastoja</a>
-<li> <a href="/end">Lopeta</a>
+    <li> <a href="/new_quiz">Luo uusi tietovisa</a>
+    <li> <a href="/change_quiz">Muokkaa tietovisaa</a>
 </ul>
 
-<p>Seuraavat tietovisat ovat aktiivisia:<p>
-<p>Klikkaamalla nimeä voit poistaa tietovisan.</p>
+<p>Klikkaamalla nimeä voit poistaa luomasi tietovisan.</p>
 
     <ul>
     {% for quiz in quizzes %}
@@ -47,8 +40,7 @@
     {% endfor %}
     </li>
 
-<p>Seuraavat tietovisat ovat ei-aktiivisia:<p>
-<p>Klikkaamalla nimeä voit aktivoida tietovisan uudelleen.</p>
+<p>Klikkaamalla nimeä voit aktivoida poistamasi tietovisan uudelleen.</p>
     
     <ul>
     {% for quiz in notquizzes %}

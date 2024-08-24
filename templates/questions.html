@@ -4,6 +4,8 @@
 
 {% if session.user_role == 1 %}
 <h2>Kysymykset</h2>
+<i> {{ message }}</i>
+<p>
 <p>Vastaa klikkaamalla kysymystä:<br> <hr>
 <ul>
     {% for question in questions %}

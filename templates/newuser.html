@@ -2,7 +2,8 @@
 
 {% block content %}
 <h2>Uuden tunnuksen luominen</h2>
-
+<i> {{ message }}</i>
+<p>
 <form action="/create_user" method="post">
 Anna tunnus: <br><input type="text" name="username" minlength="1" maxlength="20">
 <p>
