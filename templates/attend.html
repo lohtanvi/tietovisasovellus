@@ -2,6 +2,9 @@
 
 {% block content %}
 <h2>Vastaus</h2>
+<p>
+<div class="content">
+<p>
 <form action="/result" method="POST">
 {% if count !=1 %}
 <p>Vastausvaihtoehdot ovat: <br>
@@ -18,6 +21,8 @@
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 <input type="hidden" name="quest_id" value="{{ quest_id }}"></p>
 <input type="submit" value="Tarkista vastaus">
+</p>
+</div>
 </form>
 <p>
 <a href="/questions/{{ quiz_id }}">Takaisin</a>

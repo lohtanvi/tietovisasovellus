@@ -5,11 +5,15 @@
 <h2>Kirjaudu sisään</h2>
 <i> {{ message }}</i>
 <p>
+<div class="content">
+<p>
 <form action="/quiz" method="POST">
 Tunnus: <br><input type="text" name="username">
 <p>
 Salasana: <br><input type="password" name="password">
 <p>
 <input type="submit" value="Kirjaudu">
+</p>
+</div>
 </form>
 {% endblock %}

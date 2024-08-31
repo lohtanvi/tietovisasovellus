@@ -17,6 +17,7 @@
 {% endif %}
 <input type="submit" name="new" value ="Näytä kysymykset">
 <input type="submit" name="new" value="Uusi kysymys"> 
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 
 <p>Valitse kysymys:<br>

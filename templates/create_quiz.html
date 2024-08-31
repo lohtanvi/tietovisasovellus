@@ -5,6 +5,8 @@
 <form action="/create_quiz" method="POST">
 <i> {{ message }}</i>
 <p>
+<div class="content">
+<p>  
 Anna uuden tietovisan nimi:<br>
 <input type="text" name="new_quiz" minlength="1" maxlength="50"></p>
 Anna tietovisalle vähintään 1 kysymys. 
@@ -31,5 +33,7 @@ Kysymykset tallentuvat automaattisesti, kun siirryt antamaan vastauksia:
 <input type="text" name="question" minlength="1" maxlength="100"></p>
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 <input type="submit" value="Siirry antamaan kysymymyksiin vastaukset">
+</p>
+</div>
 </form>
 {% endblock %}

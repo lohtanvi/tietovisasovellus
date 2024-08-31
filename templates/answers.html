@@ -5,6 +5,8 @@
 <form action="/create_answer" method="POST">
 <i>{{ message }}</i>
 <p>
+<div class="content">
+<p>
 Anna kysymykseen oikea vastaus:<br>
 <input type="text" name="correct"></p>
 <p>Mikäli haluat, että kysymys on vaihtoehtokysymys eli annetuista vaihtoehdoista valitaan yksi, niin anna muut vastausvaihtoehdot.</p>
@@ -15,5 +17,7 @@ Anna kysymykseen oikea vastaus:<br>
 <input type="hidden" name="id" value="{{ id }}">
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 <input type="submit" value="Seuraava kysymys">
+</p>
+</div>
 </form>
 {% endblock %}

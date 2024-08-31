@@ -4,6 +4,8 @@
 <h2>Uuden tunnuksen luominen</h2>
 <i> {{ message }}</i>
 <p>
+<div class="content">
+<p>
 <form action="/create_user" method="post">
 Anna tunnus: <br><input type="text" name="username" minlength="1" maxlength="20">
 <p>
@@ -19,7 +21,7 @@ Valitse rooli:
 <p>
 <input type="submit" value="Luo tunnus">
 </form>
-
+</div>
 <p>
 <a href="/">Takaisin</a>
 {% endblock %}

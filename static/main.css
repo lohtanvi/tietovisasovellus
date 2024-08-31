@@ -27,13 +27,29 @@ h2 {
   background-color: orange;
   text-align: center;
   color: azure;
-  border-radius: .1em;
+  border-radius: .2em;
 }
 
 
 i {
-  background-color: whitesmoke;
+  background-color:  #dedee7;
   text-align: center;
   color: red;
-  border-radius: .1em;
+  border-radius: .2em;
+}
+
+.header {
+  background: orangered;
+  color: azure;
+  font-weight: bold;
+  padding: 0.5em 1em;
+  font-size: 2em;
+  border-radius: .5em;
+  margin-top: .5em;
+}
+
+.content {
+  background: #dedee7;
+  padding: 1.5em 2em;
+  border-radius: 1em
 }

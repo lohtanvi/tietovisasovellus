@@ -2,7 +2,10 @@
 
 {% block content %}
 <h2>Tietovisan muokkaus</h2>
-
+<i> {{ message }}</i>
+<p>
+<div class="content">
+<p>
 <form action="/new_question" method="POST">
 
 Kysymys tallentuu automaattisesti, kun siirryt antamaan vastauksen:
@@ -11,5 +14,7 @@ Kysymys tallentuu automaattisesti, kun siirryt antamaan vastauksen:
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 <input type="hidden" name="quiz_id" value="{{ quiz_id }}">
 <input type="submit" value="Siirry antamaan kysymymykseen vastaus">
+</p>
+</div>
 </form>
 {% endblock %}

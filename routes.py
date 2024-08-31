@@ -215,6 +215,8 @@ def change_quiz():
         quizzes = quizz.get_creator_quizzes(creator_id)
         return render_template("change_quiz.html", quizzes=quizzes)
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         quiz_id = request.form["quiz"]
         creator_id = session["user_id"]
         quizzes = quizz.get_creator_quizzes(creator_id)
@@ -248,3 +250,6 @@ def new_question():
     if question != "":
         id = questanswer.add_question(quiz_id,question)
         return render_template("answers.html", id=id)
+    else:
+        questions = questanswer.get_questions(quiz_id)
+        return render_template("change_questions.html", questions=questions, quiz_id=quiz_id, message = 'Kysymystä ei annettu')
