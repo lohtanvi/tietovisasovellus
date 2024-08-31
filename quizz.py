@@ -29,7 +29,9 @@ def set_quiz_visible(id):
 
 def create_quiz_name(creator_id,name):
     sql = text("INSERT INTO quizzes (creator_id, name, visible) VALUES (:creator_id, :name, :visible) RETURNING id")
-    return db.session.execute(sql, {"creator_id":creator_id,"name":name,"visible":1}).fetchone()[0]
+    id = db.session.execute(sql, {"creator_id":creator_id,"name":name,"visible":1}).fetchone()[0]
+    db.session.commit()
+    return id
 
 def count_quizzes(creator_id):
     sql = text("SELECT COUNT(name) FROM quizzes WHERE creator_id=:creator_id")

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Tietovisan muokkaus</h2>
+
+<form action="/new_question" method="POST">
+
+Kysymys tallentuu automaattisesti, kun siirryt antamaan vastauksen:
+<p>Uusi kysymys:<br>
+<input type="text" name="question" minlength="1" maxlength="100"></p>
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+<input type="hidden" name="quiz_id" value="{{ quiz_id }}">
+<input type="submit" value="Siirry antamaan kysymymykseen vastaus">
+</form>
+{% endblock %}

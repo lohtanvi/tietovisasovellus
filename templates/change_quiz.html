@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% if session.user_role == 2 %}
+<h2>Tietovisan muuttaminen</h2>
+<i>{{ message }}</i>
+<p>Valitse tietovisa.</p>
+<form action="/change_quiz" method="POST">
+<ul>
+    {% for quiz in quizzes %}
+
+    <input type="radio" name="quiz" value="{{ quiz.id }}"> {{ quiz.name }} <br>
+    {% endfor %}
+    <input type="hidden" name="quiz" value="empty" checked> 
+</ul>   
+{% endif %}
+<input type="submit" name="new" value ="Näytä kysymykset">
+<input type="submit" name="new" value="Uusi kysymys"> 
+</form>
+
+<p>Valitse kysymys:<br>
+<form action="/del_question" method="POST">   
+    <ul>
+        {% for question in questions %}
+        <input type="radio" name="question" value="{{ question.id }}"> {{ question.question }} <br>
+        {% endfor %}
+        <input type="hidden" name="question" value="empty" checked>
+    </ul>
+<input type="submit" value="Poista kysymys">
+</form>
+{% endblock %}

@@ -152,6 +152,9 @@ def create_answer():
     id = quest_id
     quiz_id = questanswer.get_quiz_id(id)
     if answer != "":
+        result = questanswer.get_answers(quest_id)
+        if result:
+            return render_template("answers.html", id = id, message = 'Kysymykselle on jo vastaus')
         questanswer.create_answer(answer,quest_id)
         wrongs = request.form.getlist("wrong")
         for wrong in wrongs:
@@ -167,6 +170,7 @@ def del_quiz(quiz_id):
     quizz.set_quiz_invisible(id)
     return redirect ("/quiz")
 
+# quiz will be activated directly by clicking the link
 @app.route("/activate_quiz/<int:quiz_id>")
 def activate_quiz(quiz_id):
     id = quiz_id
@@ -202,3 +206,45 @@ def result():
         else:
             points.give_point(user_id,quiz_id,quest_id)
     return render_template("result.html", correct=correct, answer=answer, quest_id=quest_id, quiz_id=quiz_id)
+
+# changing questions
+@app.route("/change_quiz",methods=["GET","POST"])
+def change_quiz():
+    if request.method == "GET":
+        creator_id = session["user_id"]
+        quizzes = quizz.get_creator_quizzes(creator_id)
+        return render_template("change_quiz.html", quizzes=quizzes)
+    if request.method == "POST":
+        quiz_id = request.form["quiz"]
+        creator_id = session["user_id"]
+        quizzes = quizz.get_creator_quizzes(creator_id)
+        if quiz_id == "empty":
+            return render_template("change_quiz.html", quizzes=quizzes, message = 'Ei valittua tietovisaa')
+        questions = questanswer.get_questions(quiz_id)
+        new = request.form["new"]
+        if new == "Uusi kysymys":
+            return render_template("change_questions.html", questions=questions, quiz_id=quiz_id)
+        return render_template("change_quiz.html", questions=questions, quizzes=quizzes)
+
+#delete question
+@app.route("/del_question", methods = ["POST"])
+def del_questions():
+    id = request.form["question"]
+    creator_id = session["user_id"]
+    quizzes = quizz.get_creator_quizzes(creator_id)
+    if id == "empty":
+        return render_template("/change_quiz.html" , quizzes=quizzes, message = 'Ei valittua kysymystä')
+    else:
+        questanswer.set_question_invisible(id)
+        return render_template("/change_quiz.html" , quizzes=quizzes, message = 'Kysymys poistettiin')
+
+#create new question
+@app.route("/new_question", methods = ["POST"])
+def new_question():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    question = request.form["question"]
+    quiz_id = request.form["quiz_id"] 
+    if question != "":
+        id = questanswer.add_question(quiz_id,question)
+        return render_template("answers.html", id=id)

@@ -3,8 +3,8 @@
 {% block content %}
 <h2>Vastaus</h2>
 <form action="/result" method="POST">
-<p>Vastausvaihtoehdot ovat: <br>
 {% if count !=1 %}
+<p>Vastausvaihtoehdot ovat: <br>
 <ul>
 {% for choice in choices %}
 <li> {{ choice.answer }} 
